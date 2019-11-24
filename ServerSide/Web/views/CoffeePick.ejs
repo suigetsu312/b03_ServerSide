@@ -1,0 +1,98 @@
+<div class="bgimage" >
+	<% include header %>
+		<% include navbar %>
+		<div class="container-fluid" style="margin-top:70px;">
+			<div class="row" >
+				<div class="col-12">
+					<div class="card mb-5">
+						<h5 class="card-title text-center"><b>挑取咖啡豆服務</b></h5>
+					</div>
+					<div class='row'>
+							<div class="col-3 text-center">
+
+								<h5 class="card-title"><b>監視相機</b></h5>
+								<div class = "text-center" style="max-height:80%;max-width:80%;margin:auto;">
+										<img class="ms-auto d-block" style="max-height:100%;max-width:100%;" src="http://140.137.132.172:2003/?action=stream"  alt="串流2">
+								</div>
+
+								<h5 class="card-title text-center pt-5"><b>檢測用相機之串流影像</b></h5>
+								<div class="text-center" style="max-height:80%;max-width:80%;margin: auto;">
+									<img class="ms-auto d-block" style="max-height:100%;max-width:100%;" src="http://140.137.132.172:2004/arm_stream" alt="串流">								
+								</div>
+							</div>	
+							   
+							<div class="col-9">
+								<div class = "card p-3 " style="min-height: 90%;">
+									<div class="row">
+										<div class="col-6 h-100 text-center">
+											<h3>檢測結果</h3>
+											<img src="./img/coffeetemp.jpg" style="margin: auto;width: 80%;" alt="dectresult">
+										</div>
+										<div class="col-6 h-100">
+											<table class="table">
+												<thead>
+													<tr>
+														<th scope="col">#</th>
+														<th scope="col">x-axis</th>
+														<th scope="col">y-axis</th>
+														<th scope="col">height</th>
+														<th scope="col">width</th>
+														<th scope="col">class</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr>
+														<th scope="row">1</th>
+														<td>Mark</td>
+														<td>Otto</td>
+														<td>@mdo</td>
+														<td>Mark</td>
+														<td>Otto</td>
+													</tr>
+													<tr>
+														<th scope="row">2</th>
+														<td>Mark</td>
+														<td>Otto</td>
+														<td>@mdo</td>
+														<td>Mark</td>
+														<td>Otto</td>
+													</tr>
+													<tr>
+													<th scope="row">3</th>
+														<td>Mark</td>
+														<td>Otto</td>
+														<td>@mdo</td>
+														<td>Mark</td>
+														<td>Otto</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+		
+								<div class = "card p-3 mt-3 ">
+									<div class="row">
+										<div class="form-group col-10">
+											<label for="exampleFormControlSelect1">豆種</label>
+											<select class="form-control" id="exampleFormControlSelect1">
+												<option>example</option>
+												<option>example</option>
+												<option>example</option>
+											</select>
+										</div>
+												
+										<div class="btn-group col-2 text-center" role="group" aria-label="Basic example">
+											<button id="pick" type="button"  class="btn btn-secondary h-100">開始抓取</button>
+										</div>
+									</div>
+																				  
+								</div>
+							</div>	
+					</div>
+					</div>	
+				</div>		
+			</div>
+		</div>
+	<% include footer %>
+</div>
