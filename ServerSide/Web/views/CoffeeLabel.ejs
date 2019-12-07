@@ -4,8 +4,8 @@
 			<div class="container-fluid" style="margin-top:70px;">
 				<div class="row" >
 					<div class="col-12">
-						<div class="card mb-5">
-							<h5 class="card-title text-center"><b>樣本標記服務</b></h5>
+						<div class="card mb-5 " style="min-height:100px;">
+							<h1 class="card-title text-center" style="font-size: 64px; margin: auto;"><b>樣本標記服務</b></h1>
 						</div>
 						<div class='row'>
 								<div class="col-10 offset-1 ">
@@ -24,12 +24,12 @@
 													<thead style="width: 100%; ">
 														<tr>
 															<th scope="col">#</th>
-															<th scope="col">x-axis</th>
-															<th scope="col">y-axis</th>
-															<th scope="col">height</th>
-															<th scope="col">width</th>
-															<th scope="col">class</th>
-															<th scope="col">del</th>
+															<th scope="col">x軸（中心點）</th>
+															<th scope="col">y軸（中心點）</th>
+															<th scope="col">高</th>
+															<th scope="col">寬</th>
+															<th scope="col">類別</th>
+															<th scope="col">刪除</th>
 														</tr>
 													</thead>
 													<tbody id='samples'>
@@ -37,27 +37,13 @@
 													</tbody>
 												</table>
 											</div>
+											<div class="btn-group offset-8 col-2 text-center" style="" role="group" aria-label="Basic example">
+												<button style="font-size: 32px;" id="takePhoto" type="button"  class="btn btn-primary h-100 mr-2">拍攝相片</button>
+												<button style="font-size: 32px;" id="storeSample" type="button"  class="btn btn-primary h-100">儲存樣本資料</button>
+											</div>
 										</div>
 									</div>
 			
-									<div class = "card p-3 mt-3 ">
-										<div class="row">
-											<div class="form-group col-10">
-												<label for="exampleFormControlSelect1">豆種</label>
-												<select class="form-control" id="exampleFormControlSelect1">
-													<option>example</option>
-													<option>example</option>
-													<option>example</option>
-												</select>
-											</div>
-													
-											<div class="btn-group col-2 text-center" role="group" aria-label="Basic example">
-												<button id="takePhoto" type="button"  class="btn btn-secondary h-100">拍攝相片</button>
-												<button id="storeSample" type="button"  class="btn btn-secondary h-100">儲存樣本資料</button>
-											</div>
-										</div>
-																					  
-									</div>
 								</div>	
 						</div>
 						</div>	
@@ -67,15 +53,50 @@
 		<% include footer %>
 		<script src="./js/label/CoffeeLabel.js"></script>
 		<script>
-			$('#takePhoto').bind('click',function(e){
-				$.ajax({
-					type:'get',
-					url:'http://127.0.0.1:3000/api/takePic',
-					success: function(data){
-						url = "url('data:image/png;base64," + data.image + "')"
-						$('canvas').css('background-image',url)
-					}
+			var curBgBase = ''
+			$(document).ready(function(){
+				$('#takePhoto').bind('click',function(e){
+					$.ajax({
+						type:'get',
+						url:'http://127.0.0.1:3000/api/takePic',
+						success: function(data){
+									curBgBase = data.image
+									url = "url('data:image/png;base64," + data.image + "')"
+									$('canvas').css('background-image',url)
+								}
+					})
 				})
+
+				$('#storeSample').bind('click',function(e){
+					var sampleImage64 = curBgBase;
+					var Samples = []
+					
+					$('#samples').children().each(function(){
+						var x = (Number($(this).children('#x_value').text())/608).toFixed(6);
+						var y = (Number($(this).children('#y_value').text())/608).toFixed(6);
+						var h = (Number($(this).children('#h_value').text())/608).toFixed(6);
+						var w = (Number($(this).children('#w_value').text())/608).toFixed(6);
+						var c = $(this).children('td').children('#BeanClass').val()
+						var CurSample = {'class':c,'x':x,'y':y,'h':h,'w':'w'}
+						Samples.push(CurSample)
+
+					})
+					var jsondata =JSON.stringify({'imageBase64':sampleImage64,'Samples':Samples});
+					console.log(jsondata)
+
+					$.ajax({
+						type:'post',
+						url:'http://127.0.0.1:3000/api/StoreSample',
+						data: {'Samples':jsondata},
+						success: function(data){
+									
+								}
+					})
+
+				})
+
 			})
+			
+			
 		</script>
 	</div>

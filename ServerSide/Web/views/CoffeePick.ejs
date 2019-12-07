@@ -4,40 +4,40 @@
 		<div class="container-fluid" style="margin-top:70px;">
 			<div class="row" >
 				<div class="col-12">
-					<div class="card mb-5">
-						<h5 class="card-title text-center"><b>挑取咖啡豆服務</b></h5>
+					<div class="card mb-5 " style="min-height:100px;">
+						<h1 class="card-title text-center" style="font-size: 64px; margin: auto;"><b>挑取咖啡豆服務</b></h1>
 					</div>
 					<div class='row'>
-							<div class="col-3 text-center">
+							<div class="col-4 text-center" >
 
-								<h5 class="card-title"><b>監視相機</b></h5>
+								<h3 class="card" style="font-size: 40px; "><b>監視相機</b></h3>
 								<div class = "text-center" style="max-height:80%;max-width:80%;margin:auto;">
 										<img class="ms-auto d-block" style="max-height:100%;max-width:100%;" src="http://140.137.132.172:2003/?action=stream"  alt="串流2">
 								</div>
 
-								<h5 class="card-title text-center pt-5"><b>檢測用相機之串流影像</b></h5>
+								<h3 class="card mt-3" style="font-size: 40px; "><b>檢測用相機之串流影像</b></h3>
 								<div class="text-center" style="max-height:80%;max-width:80%;margin: auto;">
 									<img class="ms-auto d-block" style="max-height:100%;max-width:100%;" src="http://140.137.132.172:2004/arm_stream" alt="串流">								
 								</div>
 							</div>	
 							   
-							<div class="col-9">
-								<div class = "card p-3 " style="min-height: 90%;">
+							<div class="col-8">
+								<div class = "card p-3 " style="min-height: 80%;">
 									<div class="row">
-										<div class="col-6 h-100 text-center">
-											<h3>檢測結果</h3>
+										<div class="col-5 h-100 text-center">
+											<h2 style="font-size: 42px;">檢測結果</h2>
 											<img src="./img/coffeetemp.jpg" style="margin: auto;width: 80%;" alt="dectresult">
 										</div>
-										<div class="col-6 h-100">
+										<div class="col-7 h-100">
 											<table class="table">
 												<thead>
 													<tr>
 														<th scope="col">#</th>
-														<th scope="col">x-axis</th>
-														<th scope="col">y-axis</th>
-														<th scope="col">height</th>
-														<th scope="col">width</th>
-														<th scope="col">class</th>
+														<th scope="col">x軸（中心點）</th>
+														<th scope="col">y軸（中心點）</th>
+														<th scope="col">高</th>
+														<th scope="col">寬</th>
+														<th scope="col">類別</th>
 													</tr>
 												</thead>
 												<tbody>
@@ -71,22 +71,16 @@
 									</div>
 								</div>
 		
-								<div class = "card p-3 mt-3 ">
-									<div class="row">
-										<div class="form-group col-10">
-											<label for="exampleFormControlSelect1">豆種</label>
-											<select class="form-control" id="exampleFormControlSelect1">
-												<option>example</option>
-												<option>example</option>
-												<option>example</option>
-											</select>
-										</div>
-												
-										<div class="btn-group col-2 text-center" role="group" aria-label="Basic example">
-											<button id="pick" type="button"  class="btn btn-secondary h-100">開始抓取</button>
-										</div>
+								<div class = "offset-8 mt-2">
+									<div class="row" >
+										<div class="btn-group text-center mr-3" role="group">
+											<button style="font-size: 32px;" id="pick" type="button"  class="btn btn-primary h-100">擷取生豆影像</button>
+										</div>	
+										<div class="btn-group text-center" role="group">
+											<button style="font-size: 32px;" id="pick" type="button"  class="btn btn-primary h-100">開始抓取</button>
+										</div>											  
 									</div>
-																				  
+									
 								</div>
 							</div>	
 					</div>

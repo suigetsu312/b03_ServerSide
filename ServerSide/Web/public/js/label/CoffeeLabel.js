@@ -14,7 +14,7 @@ var canvasOffset = $canvas.offset();
 var offsetX = canvasOffset.left;
 var offsetY = canvasOffset.top;
 if($(window).scrollTop() > 0){
-    offsetY += 75
+    offsetY = canvasOffset.top-$(window).scrollTop();    
 }
 var scrollX = $canvas.scrollLeft();
 var scrollY = $canvas.scrollTop();
@@ -32,7 +32,7 @@ $(window).scroll(function(){
     var y = $(window).scrollTop()
     console.log(y)
     if (y>0){
-        offsetY = canvasOffset.top-75;    
+        offsetY = canvasOffset.top-$(window).scrollTop();    
     }else{
         offsetY = canvasOffset.top;    
     }
@@ -62,8 +62,6 @@ function handleMouseDown(e) {
     // save the starting x/y of the rectangle
     startX = parseInt(e.clientX - offsetX);
     startY = parseInt(e.clientY - offsetY);
-    
-
     // set a flag indicating the drag has begun
     isDown = true;
 }
@@ -108,11 +106,19 @@ function handleMouseMove(e) {
     height = mouseY - startY;
     RecordH = height
     RecordW = width
-    RecordY = startY
-    RecordX = startX
+    if (RecordX < 0 || RecordY <0){
+        RecordY = mouseY
+        RecordX = mouseX
+    }
+    else{
+        RecordY = startY
+        RecordX = startX
+    }
+    
     // draw a new rect from the start position 
     // to the current mouse position
     ctx.strokeRect(RecordX, RecordY, RecordW, RecordH);
+    ctx.fillRect(RecordX,RecordY,1,1); 
 
 
 }
@@ -128,21 +134,42 @@ $("#canvas").mouseup(function (e) {
     handleMouseUp(e);
     var samples =  $('#samples');
     if(samples.children('tr').length != 0){
-        var index = Number(samples.children('tr').last().children('th').text())+1
+        var index = Number(samples.children('tr').last().children('td').first().text())+1
     }
     else{
         var index = 1;
     }
 
-    var head = $('<th>').attr('scope','row').text(index)
-    var x = $('<td>').text(RecordX + RecordW/2) 
-    var y = $('<td>').text(RecordY + RecordH/2)
-    var heightd = $('<td>').text(RecordH) 
-    var widthtd = $('<td>').text(RecordW) 
-    var selectClassStr = '<td><select class="form-control" id="exampleFormControlSelect1"><option>normal</option><option>broken</option><option>insect</option></select></td>';				
+    var head = $('<td>').append($('<button>').attr('scope','row').text(index).attr('id','dis_bean').click(function(e){
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        var h = Number($(this).parent().parent().children('#h_value').text())
+        var w = Number($(this).parent().parent().children('#w_value').text())
+        var x = Number($(this).parent().parent().children('#x_value').text())
+        var y = Number($(this).parent().parent().children('#y_value').text())
+
+        ctx.strokeRect(x+Math.floor(w/2), y+Math.floor(h/2), w, h);
+    }))
+
+    if( RecordH < 0 || RecordY <0){
+
+    }
+    var x = $('<td>').text(Math.abs(RecordX) - RecordW/2).attr('id','x_value')
+    var y = $('<td>').text(Math.abs(RecordY) - RecordH/2).attr('id','y_value')
+    var heightd = $('<td>').text(Math.abs(RecordH)).attr('id','h_value')
+    var widthtd = $('<td>').text(Math.abs(RecordW)).attr('id','w_value')
+    var selectClassStr = '<td><select class="form-control" id="BeanClass"><option value=0>normal</option><option value=1>broken</option><option value=2>insect</option></select></td>';				
     var selectClass = $(selectClassStr)
     
     var delbtn = $('<button>').attr('id','delSampleBtn').attr('class','btn btn-danger text-center').text('delete').attr('type','button').bind('click',function(e){
+        if($(this).parent().parent().next().length){
+            $(this).parent().parent().nextAll().each(function(){
+                var number = Number($(this).children('td').first().children('button').text())-1
+                $(this).children('td').first().children('button').text(number)
+            })
+            
+        }
         $(this).parent().parent().remove()
     })
     var btntd = $('<td>').append(delbtn)
