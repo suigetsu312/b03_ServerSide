@@ -26,7 +26,7 @@
 									<div class="row">
 										<div class="col-5 h-100 text-center">
 											<h2 style="font-size: 42px;">檢測結果</h2>
-											<img src="./img/coffeetemp.jpg" style="margin: auto;width: 80%;" alt="dectresult">
+											<img id='detected' src="./img/coffeetemp.jpg" style="margin: auto;width: 80%;" alt="dectresult">
 										</div>
 										<div class="col-7 h-100">
 											<table class="table">
@@ -40,31 +40,7 @@
 														<th scope="col">類別</th>
 													</tr>
 												</thead>
-												<tbody>
-													<tr>
-														<th scope="row">1</th>
-														<td>Mark</td>
-														<td>Otto</td>
-														<td>@mdo</td>
-														<td>Mark</td>
-														<td>Otto</td>
-													</tr>
-													<tr>
-														<th scope="row">2</th>
-														<td>Mark</td>
-														<td>Otto</td>
-														<td>@mdo</td>
-														<td>Mark</td>
-														<td>Otto</td>
-													</tr>
-													<tr>
-													<th scope="row">3</th>
-														<td>Mark</td>
-														<td>Otto</td>
-														<td>@mdo</td>
-														<td>Mark</td>
-														<td>Otto</td>
-													</tr>
+												<tbody id='BeanList'>
 												</tbody>
 											</table>
 										</div>
@@ -90,10 +66,89 @@
 		</div>
 		<script>
 			$('document').ready(function(){
-				$('#detect').click(function(){
-					console.log('aaa')
+				//已經檢測過豆子
+				var already = false;
+				var curbeans = [];
+				$('#pick').click(function(){
+					if(!already){
+						alert('尚未對生豆進行瑕疵檢測')
+					}
+					var defectBean = curbeans.filter(x =>x.c != 0)
+					
+					$.ajax({
+						type:'post',
+						url:'./api/pick_bean',
+						data : {'defectBean' : defectBean},
+						success: function(res){
+							console.log('c')
+						}
+					})
+
 				})
-			})
+
+				$('#detect').click(function(){
+					already = true
+
+					$.ajax({
+						type:'get',
+						url:'./api/detectBean',
+						success: function(res){
+								curbeans = res.data
+								var resultImg = res.ResultImage
+								var img = res.ImageName
+								//顯示包含bounding box之影像
+								url = "data:image/jpg;base64," + resultImg
+								$('#detected').attr('src',url)
+								
+								var defect = 0
+
+								//BEAN LIST
+								var BeanList = $('#BeanList')
+								var index = 1;
+								console.log(curbeans)
+								curbeans.forEach(function(item,index){
+									if(this.c != 0){
+										defect+=1
+									}
+									var x = Number(item.x).toFixed(2)
+									var y = Number(item.y).toFixed(2)
+									var h = Number(item.h).toFixed(2)
+									var w = Number(item.w).toFixed(2)
+									var c = Number(item.c).toFixed(2)
+									console.log(item)
+									var indextd = $('<td>').text(index.toString())
+									var xtd = $('<td>').text(Math.abs(x) + w/2).attr('id','x_value')
+									var ytd = $('<td>').text(Math.abs(y) + h/2).attr('id','y_value')
+    								var heightd = $('<td>').text(Math.abs(h)).attr('id','h_value')
+									var widthtd = $('<td>').text(Math.abs(w)).attr('id','w_value')
+									var ctd = $('<td>').text(c).attr('id','c_value')
+									var curBeanData = $('<tr>').append(indextd).append(xtd).append(ytd).append(heightd).append(widthtd).append(ctd)
+									BeanList.append(curBeanData)
+									index++;
+								})
+								var defectRate = defect/curbeans.length;
+								//store record
+								$.ajax({
+									type: 'post',
+									url:'./api/StoreRecord',
+									data : {
+										'image' : img ,
+										'defectRate': defectRate,
+										'Data' : curbeans,
+										'Date' : Date.now()
+									},
+									success : function(data){
+										console.log('stored')
+									},
+									error : function(){
+										console.log(this.data)
+									}
+									
+								})
+							}
+					});
+				})
+			});
 		</script>
 	<% include footer %>
 </div>

@@ -40,8 +40,8 @@ def yolo(image_path):
     for i in range(len(a)):
         #印出生豆資料
         print("x: {0:3f}, y: {1:3f}, prob: {2:3f}, class: {3:3f}".format(a[i][0],a[i][1],a[i][4],a[i][5]))
-        #忽略prob被設定為-1的豆子和正常豆
-        if a[i][4] == -1 or a[i][5] == 0:
+        #忽略prob被設定為-1的豆子
+        if a[i][4] == -1:
             continue
         #加入瑕疵豆列表
         defect_list.append({'x':a[i][0],'y':a[i][1],'h':a[i][2],'w':a[i][3],'c':a[i][5]})
@@ -51,8 +51,9 @@ def yolo(image_path):
         w = int(a[i][3])
         print(x,y,h,w)
         #點出瑕疵豆中心點並存成另一張圖
-        cv2.rectangle(frame, (x,y), (x+w,y+h), (0,0,0))
-        cv2.circle(frame, (x,y), 3, (255,255,0), 3)
+        if not a[i][5] == 0:
+            cv2.rectangle(frame, (x-w//2,y+h//2), (x+w//2,y-h//2), (0,0,255),3)
+            cv2.circle(frame, (x,y), 3, (255,255,0), 3)
     #存圖    
     cv2.imwrite('/home/leeyihan/b03/socket_python/imageLog/result/result_'+image_path.split('/')[-1], frame)
 
@@ -121,18 +122,22 @@ app = Flask(__name__)
 
 @app.route('/detectBean')
 def detectBean():
+    
     #拍照
-    #r = requests.get('http://140.137.132.172:2004/cur_shot')
-    #data = r.json() # Check the JSON Response Content documentation below
-    #img_name = '/home/leeyihan/b03/socket_python/imageLog/image/' + strftime("%Y-%m-%d-%T", localtime()) + '.jpg'
-    #save_img(data['image'] , img_name)
-
+    r = requests.get('http://140.137.132.172:2004/cur_shot')
+    data = r.json() # Check the JSON Response Content documentation below
+    nowTime = strftime("%Y-%m-%d-%T", localtime())
+    img_name = '/home/leeyihan/b03/ServerSide/imageLog/image/' + nowTime + '.jpg'
+    save_img(data['image'] , img_name)
+    
     #進行yolo物件偵測
-    data = yolo('/home/leeyihan/b03/ServerSide/imageLog/image/2019-10-28-08:33:17.jpg')
-    print(data['image'])
+    
+    #detect_result = yolo('/home/leeyihan/b03/ServerSide/imageLog/image/2019-10-28-08:33:17.jpg')
+    detect_result = yolo(img_name)
     return jsonify(
-        image=data['image'],
-        data=data['defect_list']
+        ResultImage=detect_result['image'],
+        ImageName=nowTime+'.jpg',
+        data=detect_result['defect_list']
     )
 
 if __name__ == "__main__":

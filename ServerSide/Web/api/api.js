@@ -13,6 +13,37 @@ api.get('/takePic', function(req,res,next){
 	req.pipe(request.get('http://140.137.132.172:2004/cur_shot', { json: true, body: req.body }), { end: false }).pipe(res);
 });
 
+api.post('/pick_bean', function(req,res,next){
+	req.pipe(request.get('http://140.137.132.172:2004/pick_bean', { json: true, body: req.body }), { end: false }).pipe(res);
+});
+
+api.post('/StoreRecord', function(req,res,next){
+	var data = req.body;
+	//origin image path
+	var OriImagePath = '/home/leeyihan/b03/ServerSide/imageLog/image/' + data.image;
+	//record
+	var beanRecord = JSON.stringify(data.Data);
+	//detect time
+	var nowTime = data.Date;
+	//defect rate = amount of abnormal bean / amount of bean
+	var DefectRate = data.defectRate;	
+	pool.connect((err, client, done) => {
+		if (err) throw new Error(err);
+		client.query('INSERT INTO "B03_Coffee"."Record"( "Record_DefectRate", "Record_ImagePath", "Record_Data", "Record_Date") VALUES ($1, $2, $3, to_timestamp($4));',[DefectRate,OriImagePath,beanRecord, nowTime], (err, res) => {
+		  done()
+		  if (err) {
+			console.log(err.stack)
+		  } else {
+			console.log(res.rows[0])
+		  }
+		})
+	})
+})
+
+api.get('/detectBean', function(req,res,next){
+	req.pipe(request.get('http://127.0.0.1:5000/detectBean', { json: true, body: req.body }), { end: false }).pipe(res);
+});
+
 api.post('/StoreSample',function(req,res,next){
 	var data = JSON.parse(req.body.Samples)
 	var image = data.imageBase64;

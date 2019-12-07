@@ -149,12 +149,10 @@ $("#canvas").mouseup(function (e) {
         var x = Number($(this).parent().parent().children('#x_value').text())
         var y = Number($(this).parent().parent().children('#y_value').text())
 
-        ctx.strokeRect(x+Math.floor(w/2), y+Math.floor(h/2), w, h);
+        ctx.strokeRect(x-Math.floor(w/2), y-Math.floor(h/2), w, h);
     }))
 
-    if( RecordH < 0 || RecordY <0){
 
-    }
     var x = $('<td>').text(Math.abs(RecordX) + RecordW/2).attr('id','x_value')
     var y = $('<td>').text(Math.abs(RecordY) + RecordH/2).attr('id','y_value')
     var heightd = $('<td>').text(Math.abs(RecordH)).attr('id','h_value')
