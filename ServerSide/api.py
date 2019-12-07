@@ -6,6 +6,7 @@ import numpy as np
 import json
 import base64
 import cv2
+from flask import Flask, Response, jsonify, request
 import requests
 from PIL import Image
 import os
@@ -15,7 +16,7 @@ def yolo(image_path):
     print('started detect')
     
     #因應相機位置將照片旋轉180度再儲存
-    Rot_name = '/home/leeyihan/b03/socket_python/imageLog/rotate/rotate_' + strftime("%Y-%m-%d-%T", localtime())+'.jpg'
+    Rot_name = '/home/leeyihan/b03/ServerSide/imageLog/rotate/rotate_' + strftime("%Y-%m-%d-%T", localtime())+'.jpg'
     pri_image = Image.open(image_path)
     pri_image.rotate(180).save(Rot_name)
 
@@ -43,16 +44,24 @@ def yolo(image_path):
         if a[i][4] == -1 or a[i][5] == 0:
             continue
         #加入瑕疵豆列表
-        defect_list.append([a[i][0],a[i][1]])
-
-    #點出瑕疵豆中心點並存成另一張圖
-    for x in defect_list:
-        center_y = int(x[1])
-        center_x = int(x[0])
-        cv2.circle(frame, (center_x,center_y), 3, (255,255,0), 3)
+        defect_list.append({'x':a[i][0],'y':a[i][1],'h':a[i][2],'w':a[i][3],'c':a[i][5]})
+        x = int(a[i][0])
+        y = int(a[i][1])
+        h = int(a[i][2])
+        w = int(a[i][3])
+        print(x,y,h,w)
+        #點出瑕疵豆中心點並存成另一張圖
+        cv2.rectangle(frame, (x,y), (x+w,y+h), (0,0,0))
+        cv2.circle(frame, (x,y), 3, (255,255,0), 3)
+    #存圖    
     cv2.imwrite('/home/leeyihan/b03/socket_python/imageLog/result/result_'+image_path.split('/')[-1], frame)
 
-    return defect_list
+    retval, buffer = cv2.imencode('.jpg', frame)
+    pic_str = base64.b64encode(buffer)
+    pic_str = pic_str.decode()
+
+    data = {'image': pic_str, 'defect_list': defect_list}
+    return data
 
 #計算iou
 def IoU(target,compare):
@@ -107,33 +116,25 @@ def save_img(base64data, img_name):
 #讀取網路資訊
 net = load_net(b'/home/leeyihan/b03/darknet/cfg/yolov3_b03_1.cfg', b'/home/leeyihan/b03/darknet/backup/1027_1/yolov3_b03_1.backup', 0)
 meta = load_meta(b"/home/leeyihan/b03/darknet/coffee.data")
-#拍照
-r = requests.get('http://140.137.132.172:2004/cur_shot')
-data = r.json() # Check the JSON Response Content documentation below
-img_name = '/home/leeyihan/b03/socket_python/imageLog/image/' + strftime("%Y-%m-%d-%T", localtime()) + '.jpg'
-save_img(data['image'] , img_name)
 
-#進行yolo物件偵測
-trad_bbox = yolo(img_name)
+app = Flask(__name__)
 
-if trad_bbox == None:
-    print('not found')
-else:
-    #進行傳送前的type轉換
-    for x in trad_bbox:
-        x[0]=str(x[0])
-        x[1]=str(x[1])
+@app.route('/detectBean')
+def detectBean():
+    #拍照
+    #r = requests.get('http://140.137.132.172:2004/cur_shot')
+    #data = r.json() # Check the JSON Response Content documentation below
+    #img_name = '/home/leeyihan/b03/socket_python/imageLog/image/' + strftime("%Y-%m-%d-%T", localtime()) + '.jpg'
+    #save_img(data['image'] , img_name)
 
-    data_dic = {}
-    df = []
-    for i in range(len(trad_bbox)):
-        df = trad_bbox[i]
-        data_dic[i] = df
+    #進行yolo物件偵測
+    data = yolo('/home/leeyihan/b03/ServerSide/imageLog/image/2019-10-28-08:33:17.jpg')
+    print(data['image'])
+    return jsonify(
+        image=data['image'],
+        data=data['defect_list']
+    )
 
-
-    #將傳送資料轉成json格式
-    data_json = json.dumps(data_dic)
-    #發出request抓取瑕疵豆
-    r = requests.post('http://140.137.132.172:2004/pick_bean', json=data_json)
-    #將會回傳204 no content
-    print(r.status_code)
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', threaded=True)
+    #yolo('/home/leeyihan/b03/ServerSide/imageLog/image/2019-10-28-08:33:17.jpg')

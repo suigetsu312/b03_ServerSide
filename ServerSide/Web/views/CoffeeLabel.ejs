@@ -81,6 +81,11 @@
 						Samples.push(CurSample)
 
 					})
+
+					if(!sampleImage64 || Samples.length ==0){
+						alert("並未進行標記或拍照")
+						return
+					}
 					var jsondata =JSON.stringify({'imageBase64':sampleImage64,'Samples':Samples});
 					console.log(jsondata)
 
@@ -89,8 +94,8 @@
 						url:'http://127.0.0.1:3000/api/StoreSample',
 						data: {'Samples':jsondata},
 						success: function(data){
-									
-								}
+							alert("上傳完成")
+						}
 					})
 
 				})

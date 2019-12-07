@@ -155,8 +155,8 @@ $("#canvas").mouseup(function (e) {
     if( RecordH < 0 || RecordY <0){
 
     }
-    var x = $('<td>').text(Math.abs(RecordX) - RecordW/2).attr('id','x_value')
-    var y = $('<td>').text(Math.abs(RecordY) - RecordH/2).attr('id','y_value')
+    var x = $('<td>').text(Math.abs(RecordX) + RecordW/2).attr('id','x_value')
+    var y = $('<td>').text(Math.abs(RecordY) + RecordH/2).attr('id','y_value')
     var heightd = $('<td>').text(Math.abs(RecordH)).attr('id','h_value')
     var widthtd = $('<td>').text(Math.abs(RecordW)).attr('id','w_value')
     var selectClassStr = '<td><select class="form-control" id="BeanClass"><option value=0>normal</option><option value=1>broken</option><option value=2>insect</option></select></td>';				
