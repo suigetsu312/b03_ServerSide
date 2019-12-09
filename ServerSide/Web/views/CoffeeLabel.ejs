@@ -1,25 +1,24 @@
-<div class="bgimage" >
-		<% include header %>
+<% include header %>
+<div id='wrapper'>
 			<% include navbar %>
 			<div class="container-fluid" style="margin-top:70px;">
 				<div class="row" >
 					<div class="col-12">
-						<div class="card mb-5 " style="min-height:100px;">
-							<h1 class="card-title text-center" style="font-size: 64px; margin: auto;"><b>樣本標記服務</b></h1>
+						<div class="mtb-3">
+							<div class="jumbotron mt-3 text-center" style="padding-top: 10px;padding-bottom: 5px;">
+								<h1 class="display-3" style="margin: auto;"><b>樣本標記服務</b></h1>
+							</div>
 						</div>
 						<div class='row'>
 								<div class="col-10 offset-1 ">
-									<div class = "card p-3 " style="min-height: 90%;">
+									<div class = "p-3" style="min-height: 90%;">
 										<div class="row">
 											
 											<div class="col-12 col-xl-6 text-center">
-												<canvas id="canvas" width="608" height="608"  style="background-size: contain;"></canvas>
-												<div>
-													<sapn>圈選生豆時請讓canvas完整得出現在畫面上,不然位置會偏掉 |</sapn>
-													<sapn style="color:red;">請使用電腦進行樣本標記</sapn>
-												</div>
+												<canvas id="canvas" width="608" height="608"  style="background-color: white;"></canvas>
+												
 											</div>
-											<div class="col-12 h-100 col-xl-6" style="overflow-y: scroll; min-height: 70vh; max-height: 70vh; display: block;">
+											<div class="card col-12 col-xl-6" style="overflow-y: scroll; min-height: 65vh; max-height: 65vh; display: block;">
 												<table id='sampleTable' class="table" >
 													<thead style="width: 100%; ">
 														<tr>
@@ -37,20 +36,28 @@
 													</tbody>
 												</table>
 											</div>
-											<div class="btn-group offset-8 col-2 text-center" style="" role="group" aria-label="Basic example">
-												<button style="font-size: 32px;" id="takePhoto" type="button"  class="btn btn-primary h-100 mr-2">拍攝相片</button>
-												<button style="font-size: 32px;" id="storeSample" type="button"  class="btn btn-primary h-100">儲存樣本資料</button>
-											</div>
+											
 										</div>
+										<div class="row pt-3">
+												<div class="col-6">
+													<sapn>圈選生豆時請讓canvas完整得出現在畫面上,不然位置會偏掉 |</sapn>
+													<sapn style="color:red;">請使用電腦進行樣本標記</sapn>
+												</div>
+
+												<div class="row btn-group col-6 text-center" style="margin: auto;" role="group" aria-label="Basic example">
+
+														<button style="font-size: 32px;" id="takePhoto" type="button"  class="col-5 btn btn-primary h-100 ml-5 mr-5">拍攝相片</button>
+														<button style="font-size: 32px;" id="storeSample" type="button"  class="col-5 btn btn-primary h-100">儲存樣本資料</button>
+												</div>
+											</div>
 									</div>
 			
 								</div>	
 						</div>
-						</div>	
+						
 					</div>		
 				</div>
 			</div>
-		<% include footer %>
 		<script src="./js/label/CoffeeLabel.js"></script>
 		<script>
 			var curBgBase = ''
@@ -58,7 +65,7 @@
 				$('#takePhoto').bind('click',function(e){
 					$.ajax({
 						type:'get',
-						url:'http://127.0.0.1:3000/api/takePic',
+						url:'./api/takePic',
 						success: function(data){
 									curBgBase = data.image
 									url = "url('data:image/png;base64," + data.image + "')"
@@ -86,13 +93,13 @@
 						alert("並未進行標記或拍照")
 						return
 					}
-					var jsondata =JSON.stringify({'imageBase64':sampleImage64,'Samples':Samples});
+					var jsondata ={'imageBase64':sampleImage64,'beans':Samples};
 					console.log(jsondata)
 
 					$.ajax({
 						type:'post',
-						url:'http://127.0.0.1:3000/api/StoreSample',
-						data: {'Samples':jsondata},
+						url:'./api/StoreSample',
+						data: jsondata,
 						success: function(data){
 							alert("上傳完成")
 						}
@@ -101,7 +108,8 @@
 				})
 
 			})
-			
-			
 		</script>
-	</div>
+		<% include footer %>
+
+</div>
+

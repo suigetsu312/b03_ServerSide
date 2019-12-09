@@ -1,95 +1,149 @@
-<div class="bgimage" >
-	<% include header %>
-		<% include navbar %>
-		<div class="container-fluid" style="margin-top:70px;">
-			<div class="row" >
-				<div class="col-12">
-					<div class="card mb-5 " style="min-height:100px;">
-						<h1 class="card-title text-center" style=" margin: auto;"><b>辨識紀錄查詢服務</b></h1>
-					</div>
-				<div class='row'>
-							<div class="col-10 offset-1 ">
-								<div class = "card p-3 " style="min-height: 90%;">
-									<div class="row">
-										<div class="col-6 h-100 text-center">
-											<h3>目前拍攝之影像</h3>
-											<canvas id="canvas" width=580 height=580></canvas>										
-										</div>
-										<div class="col-6 h-100">
-											<table class="table">
-												<thead>
-													<tr>
-														<th scope="col">#</th>
-														<th scope="col">x-axis</th>
-														<th scope="col">y-axis</th>
-														<th scope="col">height</th>
-														<th scope="col">width</th>
-														<th scope="col">class</th>
-													</tr>
-												</thead>
-												<tbody>
-													<tr>
-														<th scope="row">1</th>
-														<td>Mark</td>
-														<td>Otto</td>
-														<td>@mdo</td>
-														<td>Mark</td>
-														<td>
-															<select class="form-control" id="exampleFormControlSelect1">
-																<option>normal</option>
-																<option>broken</option>
-																<option>insect</option>
-															</select>
-														</td>
-														
-													</tr>
-													
-												</tbody>
-											</table>
-										</div>
-									</div>
+<% include header %>
+<div id="wrapper" >
+	<% include navbar %>
+	<div class="container-fluid h-100" style="margin-top:70px;">
+			<div id="serach" class="row h-100" >
+				<div class="col-6 mx-auto h-100">
+					<div  class="jumbotron" style="margin-top: 30vh;margin-right: auto;">
+						<div class="form-group">
+							<label style="font-size: 64px;">辨識紀錄查詢</label>
+							<div class="input-group" >
+								
+								<input type="date" class="form-control" id="StartDate" placeholder="起始日期" style='font-size:32px'>
+								<input type="date" class="form-control" id="EndDate" placeholder="起始日期" style='font-size:32px'>
+								<div class="input-group-append">
+									<button id="getRecord" class="btn btn-outline-secondary" type="button" style='font-size:32px'>查詢</button>
 								</div>
-		
-								<div class = "card p-3 mt-3 ">
-									<div class="row">
-										<div class="form-group col-10">
-											<label for="exampleFormControlSelect1">豆種</label>
-											<select class="form-control" id="exampleFormControlSelect1">
-												<option>example</option>
-												<option>example</option>
-												<option>example</option>
-											</select>
-										</div>
-												
-										<div class="btn-group col-2 text-center" role="group" aria-label="Basic example">
-											<button id="pick" type="button"  class="btn btn-secondary h-100">拍攝相片</button>
-											<button id="pick" type="button"  class="btn btn-secondary h-100">儲存樣本資料</button>
-										</div>
-									</div>
-																				  
-								</div>
-							</div>	
+							</div>
+							
+						</div>										
 					</div>
-					</div>	
-				</div>		
+				</div>	
 			</div>
-		</div>
+			
+			<div id="chart" class="row h-100">
+				<div class="col-8 mx-auto h-100">
+					<div  class="jumbotron" style="margin-top: 5vh;margin-right: auto;">
+						<canvas id='chart_canvas' style="width: 100%;height: 30vh;"></canvas>
+					</div>
+					<div class="row input-group-append">
+							<button id="Return_Search" class="offset-10 btn btn-primary" style="width: 10vw;" type="button">返回</button>
+					</div>
+				</div>	
+			</div>
+
+	</div>
 	<% include footer %>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+
 	<script>
-		var canvas = document.getElementById("canvas"),
-    	ctx = canvas.getContext("2d");
+		
+		$(document).ready(function(){
+			$('#chart').hide()
+			var first_Search = true;
+			var first_Chart = true;
+			$('#getRecord').click(function(){
+				labels = []
+				data = []
+				console.log($('#StartDate').val(),$('#EndDate').val())
+				var sd = new Date($('#StartDate').val())
+				var ed = new Date($('#EndDate').val())
+				console.log(sd,ed)
+				if(sd > ed){
+					alert('起始時間不得晚於結束時間')
+					return;
+				}
+				if(isNaN(sd) || isNaN(ed)){
+					alert('請輸入起始日期與結束日期')
+					return;
+				}
+				if(sd > Date.now()){
+					alert('請輸入正確的日期')
+					return;
+				}
+				if(sd.getTime() == ed.getTime()){
+					ed.setDate(ed.getDate()+1)
+				}
+				$('#serach').animate({"margin-right": '+=30vw'},500,function(){
+					$(this).fadeOut('fast',function(){
+						$('#chart').fadeIn('fast',function(){
+							if(!first_Search){
+								$(this).animate({"margin-right": '-=30vw'},500)
+							}else{
+								first_Search = false;
+							}
+						})
+					})
+				});
+				$.ajax({
+					type:'post',
+					url:'./api/GetRecord',
+					data: {
+						'start' :sd.getTime(),
+						'end' : ed.getTime()
+					},
+					success: function(res){
+						var perviousDate = '';
+						res.forEach(element => {
+							data.push(element.Record_DefectRate)
+							labels.push(new Date(element.Record_Date))
+						});
 
-		canvas.width = 580;
-		canvas.height = 580;
+						var chart = new Chart(document.getElementById("chart_canvas"), {
+								type: 'line',
+								data: {
+									labels: labels,
+									datasets: [{
+										label : 'defect rate',
+										data: data,
+										backgroundColor: "rgba(0,148,255,0.6)",
+										pointBackgroundColor: "rgba(255,0,0,0.6)"
+									}]
+								},
+								options: {
+									animation: {
+										duration: 2000
+									},
+									scales: {
+										yAxes: [{
+											gridLines: {
+												display: false
+											},
+										}],
+										xAxes:[{
+											display: 'true',
+											type: 'time',
+											time : {
+												parser : 'MM/DD/YYY HH:mm',
+												tooltipFormat: 'll HH:mm',
+												unit: 'day',
+												unitStepSize: 1,
+												displayFormats:{
+													'day': 'MM/DD/YYY'
+												}
+											}
+										}]
+									}
+								}
 
-		var background = new Image();
-		background.src = "./img/coffeetemp.png";
+						});
+						chart.options.scales.yAxes[0].ticks.fontSize = 20;
+						chart.options.scales.xAxes[0].ticks.fontSize = 20;
+						chart.update();
+					}
+				})
+			})
 
-		// Make sure the image is loaded first otherwise nothing will draw.
-		background.onload = function(){
-    		ctx.drawImage(background,0,0);   
-		}
-
+			$('#Return_Search').click(function(){
+				$('#chart').animate({"margin-right": '+=30vw'},500,function(){
+					$(this).fadeOut('fast',function(){
+						$('#serach').fadeIn('fast',function(){
+								$(this).animate({"margin-right": '-=30vw'},500)
+						})
+					})
+				});
+			})
+		})
 
 	</script>
 </div>

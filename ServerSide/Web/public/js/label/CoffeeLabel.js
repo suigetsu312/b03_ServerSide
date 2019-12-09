@@ -140,7 +140,7 @@ $("#canvas").mouseup(function (e) {
         var index = 1;
     }
 
-    var head = $('<td>').append($('<button>').attr('scope','row').text(index).attr('id','dis_bean').click(function(e){
+    var head = $('<td>').append($('<button>').attr('scope','row').css('background-color','Transparent').text(index).attr('id','dis_bean').click(function(e){
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -157,7 +157,7 @@ $("#canvas").mouseup(function (e) {
     var y = $('<td>').text(Math.abs(RecordY) + RecordH/2).attr('id','y_value')
     var heightd = $('<td>').text(Math.abs(RecordH)).attr('id','h_value')
     var widthtd = $('<td>').text(Math.abs(RecordW)).attr('id','w_value')
-    var selectClassStr = '<td><select class="form-control" id="BeanClass"><option value=0>normal</option><option value=1>broken</option><option value=2>insect</option></select></td>';				
+    var selectClassStr = '<td><select class="form-control" id="BeanClass"><option value=0>正常豆</option><option value=1>裂豆</option><option value=2>蟲蛀豆</option></select></td>';				
     var selectClass = $(selectClassStr)
     
     var delbtn = $('<button>').attr('id','delSampleBtn').attr('class','btn btn-danger text-center').text('delete').attr('type','button').bind('click',function(e){

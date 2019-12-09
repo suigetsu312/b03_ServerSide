@@ -1,64 +1,37 @@
-<div class="bgimage" >
-	<% include header %>
+<% include header %>
+<div id="wrapper" >
 		<% include navbar %>
 		<div class="container-fluid" style="margin-top:70px;">
 			<div class="row" >
-				<div class="col-12">
-					<div class="card mb-5 " style="min-height:100px;">
-						<h1 class="card-title text-center" style="font-size: 64px; margin: auto;"><b>挑取咖啡豆服務</b></h1>
+				<div class="col-12" style="height: 100vh;">
+					<div class="mtb-3">
+						<div class="jumbotron mt-3 text-center" style="padding-top: 10px;padding-bottom: 5px;">
+							<h1 class="display-3" style="margin: auto;"><b>挑取瑕疵豆服務</b></h1>
+						</div>
 					</div>
 					<div class='row'>
-							<div class="col-4 text-center" >
-
-								<h3 class="card" style="font-size: 40px; "><b>監視相機</b></h3>
-								<div class = "text-center" style="max-height:80%;max-width:80%;margin:auto;">
-										<img class="ms-auto d-block" style="max-height:100%;max-width:100%;" src="http://140.137.132.172:2003/?action=stream"  alt="串流2">
-								</div>
-
-								<h3 class="card mt-3" style="font-size: 40px; "><b>檢測用相機之串流影像</b></h3>
-								<div class="text-center" style="max-height:80%;max-width:80%;margin: auto;">
-									<img class="ms-auto d-block" style="max-height:100%;max-width:100%;" src="http://140.137.132.172:2004/arm_stream" alt="串流">								
-								</div>
-							</div>	
-							   
-							<div class="col-8">
-								<div class = "card p-3 " style="min-height: 80%;">
-									<div class="row">
-										<div class="col-5 h-100 text-center">
-											<h2 style="font-size: 42px;">檢測結果</h2>
-											<img id='detected' src="./img/coffeetemp.jpg" style="margin: auto;width: 80%;" alt="dectresult">
-										</div>
-										<div class="col-7 h-100">
-											<table class="table">
-												<thead>
-													<tr>
-														<th scope="col">#</th>
-														<th scope="col">x軸（中心點）</th>
-														<th scope="col">y軸（中心點）</th>
-														<th scope="col">高</th>
-														<th scope="col">寬</th>
-														<th scope="col">類別</th>
-													</tr>
-												</thead>
-												<tbody id='BeanList'>
-												</tbody>
-											</table>
-										</div>
-									</div>
-								</div>
-		
-								<div class = "offset-8 mt-2">
-									<div class="row" >
-										<div class="btn-group text-center mr-3" role="group">
-											<button style="font-size: 32px;" id="detect" type="button"  class="btn btn-primary h-100">檢測生豆</button>
-										</div>	
-										<div class="btn-group text-center" role="group">
-											<button style="font-size: 32px;" id="pick" type="button"  class="btn btn-primary h-100">開始抓取</button>
-										</div>											  
-									</div>
+						<div class="col-6 mt-3 text-center" style="min-height:30vh;margin:auto;">
+							<div class = "text-center" style="height: 608px;margin:auto;">
+								<img class="ms-auto d-block" style="height: 500px;margin:auto;" src="http://140.137.132.172:2003/?action=stream"  alt="串流2">
+								<h3 class="card mt-3 title" style="font-size: 40px;">監視相機</h3>
+							</div>
+						</div>
+						<div class="col-6 mt-3 text-center" style="min-height:30vh;margin:auto;">
+								<div class = "text-center" style="height: 500px;margin:auto;">
+									<img id='detected' style="margin: auto; background-color: white; height: 500px;width: 500px;">
 									
 								</div>
-							</div>	
+								<div>
+									<h2 id="defect_rate" style="font-size: 42px;">檢測結果</h2>						  
+									<div class="btn-group text-center mr-3" role="group">
+										<button style="font-size: 32px;" id="detect" type="button"  class="btn btn-primary h-100">檢測生豆</button>
+									</div>
+									<div class="btn-group text-center" role="group">
+										<button style="font-size: 32px;" id="pick" type="button"  class="btn btn-primary h-100">開始抓取</button>
+									</div>											  
+								</div>
+								
+						</div>
 					</div>
 					</div>	
 				</div>		
@@ -101,33 +74,16 @@
 								$('#detected').attr('src',url)
 								
 								var defect = 0
-
-								//BEAN LIST
-								var BeanList = $('#BeanList')
-								var index = 1;
-								console.log(curbeans)
 								curbeans.forEach(function(item,index){
-									if(this.c != 0){
+									if(item.c != 0){
 										defect+=1
 									}
-									var x = Number(item.x).toFixed(2)
-									var y = Number(item.y).toFixed(2)
-									var h = Number(item.h).toFixed(2)
-									var w = Number(item.w).toFixed(2)
-									var c = Number(item.c).toFixed(2)
-									console.log(item)
-									var indextd = $('<td>').text(index.toString())
-									var xtd = $('<td>').text(Math.abs(x) + w/2).attr('id','x_value')
-									var ytd = $('<td>').text(Math.abs(y) + h/2).attr('id','y_value')
-    								var heightd = $('<td>').text(Math.abs(h)).attr('id','h_value')
-									var widthtd = $('<td>').text(Math.abs(w)).attr('id','w_value')
-									var ctd = $('<td>').text(c).attr('id','c_value')
-									var curBeanData = $('<tr>').append(indextd).append(xtd).append(ytd).append(heightd).append(widthtd).append(ctd)
-									BeanList.append(curBeanData)
-									index++;
 								})
 								var defectRate = defect/curbeans.length;
+								console.log(defectRate);
+								$('#defect_rate').text('生豆瑕疵率：'+defectRate.toFixed(2).toString())
 								//store record
+								
 								$.ajax({
 									type: 'post',
 									url:'./api/StoreRecord',

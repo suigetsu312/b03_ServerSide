@@ -2,4 +2,6 @@ coffee
 dataset
 darknet
 .vscode
+ClientSide
 *.jpg
+*.zip

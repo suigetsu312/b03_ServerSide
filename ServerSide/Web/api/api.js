@@ -13,6 +13,10 @@ api.get('/takePic', function(req,res,next){
 	req.pipe(request.get('http://140.137.132.172:2004/cur_shot', { json: true, body: req.body }), { end: false }).pipe(res);
 });
 
+api.get('/detectBean', function(req,res,next){
+	req.pipe(request.get('http://127.0.0.1:5000/detectBean', { json: true, body: req.body }), { end: false }).pipe(res);
+});
+
 api.post('/pick_bean', function(req,res,next){
 	req.pipe(request.get('http://140.137.132.172:2004/pick_bean', { json: true, body: req.body }), { end: false }).pipe(res);
 });
@@ -27,28 +31,47 @@ api.post('/StoreRecord', function(req,res,next){
 	var nowTime = data.Date;
 	//defect rate = amount of abnormal bean / amount of bean
 	var DefectRate = data.defectRate;	
+
 	pool.connect((err, client, done) => {
 		if (err) throw new Error(err);
-		client.query('INSERT INTO "B03_Coffee"."Record"( "Record_DefectRate", "Record_ImagePath", "Record_Data", "Record_Date") VALUES ($1, $2, $3, to_timestamp($4));',[DefectRate,OriImagePath,beanRecord, nowTime], (err, res) => {
+		client.query('INSERT INTO "B03_Coffee"."Record"( "Record_DefectRate", "Record_ImagePath", "Record_Data", "Record_Date") VALUES ($1, $2, $3, to_timestamp($4));',[DefectRate,OriImagePath,beanRecord, nowTime/1000], (error, result) => {
 		  done()
-		  if (err) {
-			console.log(err.stack)
+		  if (error) {
+			console.log(error.stack)
+			res.sendStatus(400)
 		  } else {
-			console.log(res.rows[0])
+			console.log('成功插入資料')
+			res.sendStatus(200)
 		  }
 		})
 	})
 })
 
-api.get('/detectBean', function(req,res,next){
-	req.pipe(request.get('http://127.0.0.1:5000/detectBean', { json: true, body: req.body }), { end: false }).pipe(res);
-});
+api.post('/GetRecord', function(req,res,next){
+	var reqdata = req.body;
+	var startDate = reqdata.start;
+	var endDate = reqdata.end;
+	console.log(startDate,endDate)
+
+	pool.connect((err, client, done) => {
+		if (err) throw new Error(err);
+		client.query('SELECT "Record_DefectRate", "Record_Data", "Record_Date" FROM "B03_Coffee"."Record" WHERE "Record_Date" BETWEEN to_timestamp($1) AND to_timestamp($2)',[startDate/1000,endDate/1000], (error, result) => {
+		  done()
+		  if (error) {
+			console.log('查詢失敗')
+			console.log(error.stack)
+		  } else {
+			res.send(200,result.rows);
+		  }
+		})
+	})	
+
+})
 
 api.post('/StoreSample',function(req,res,next){
-	var data = JSON.parse(req.body.Samples)
-	var image = data.imageBase64;
-	var Samples = data.Samples;
-
+	var resdata = req.body
+	var image = resdata.imageBase64;
+	var Samples = resdata.beans;
 	var now = Date.now();
 	var imagePath = root+'/Public/Sample/' + now + ".png";
 	fs.writeFile('./public/Sample/'+ now +'.png', image, {encoding: 'base64',flag:'w+'},function(err) {
@@ -57,12 +80,12 @@ api.post('/StoreSample',function(req,res,next){
 
 	pool.connect((err, client, done) => {
 		if (err) throw new Error(err);
-		client.query('INSERT INTO "B03_Coffee"."Samples"("Sample_ImagePath", "Sample_Data", "Sample_Date") VALUES ($1, $2, to_timestamp($3));',[imagePath,JSON.stringify(data.Samples), now], (err, res) => {
+		client.query('INSERT INTO "B03_Coffee"."Samples"("Sample_ImagePath", "Sample_Data", "Sample_Date") VALUES ($1, $2, to_timestamp($3))',[imagePath,Samples, now/1000], (error, result) => {
 		  done()
-		  if (err) {
-			console.log(err.stack)
+		  if (error) {
+			console.log(error.stack)
 		  } else {
-			console.log(res.rows[0])
+			console.log(result.rows)
 		  }
 		})
 	})	

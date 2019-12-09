@@ -14,17 +14,17 @@ import os
 def yolo(image_path):
     #([b.x, b.y, b.h, b.w, dets[j].prob[i]], meta.names[i])
     print('started detect')
-    
+    '''
     #因應相機位置將照片旋轉180度再儲存
     Rot_name = '/home/leeyihan/b03/ServerSide/imageLog/rotate/rotate_' + strftime("%Y-%m-%d-%T", localtime())+'.jpg'
     pri_image = Image.open(image_path)
     pri_image.rotate(180).save(Rot_name)
-
+    '''
     #yolo物件偵測
-    trad_bbox = detect(net, meta, str.encode(Rot_name))
+    trad_bbox = detect(net, meta, str.encode(image_path))
 
     #讀取旋轉後的相片
-    frame = cv2.imread(Rot_name)
+    frame = cv2.imread(image_path)
 
     #如果物件偵測結果沒有任何豆子就回傳None(null)
     if len(trad_bbox) == 0:
