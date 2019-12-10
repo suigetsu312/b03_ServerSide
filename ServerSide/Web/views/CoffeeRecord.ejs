@@ -128,25 +128,41 @@
 								data: {
 									labels: labels,
 									datasets: [{
-										label : 'defect rate',
+										label : '咖啡生豆瑕疵率',
 										data: data,
-										backgroundColor: "rgba(0,148,255,0.6)",
-										pointBackgroundColor: "rgba(255,0,0,0.6)",
-										fontSize : 20
+										fill: false,   
+										borderColor: "#5dd55d",
+
+										pointBackgroundColor: "rgba(255,0,0,0.6)",											
 									}]
 								},
 								options: {
-									hover: {
-    									intersect: false
-  									},
+								    title: { //標題
+										display: true,
+										text: '生豆瑕疵率圖表',
+										fontSize: 40,
+										fontColor: "#f00",
+									},
 
 									animation: {
 										duration: 2000
 									},
-									scales: {
+									scales: {                
+										legend: {
+               								position: 'left',     
+                    						labels: {
+                        						fontSize:100,  
+                    						}
+                						},
+      	  									backgroundColor: '#b3d9ff',
 										yAxes: [{
 											gridLines: {
 												display: true
+											},											
+											scaleLabel: {
+												display: true,
+												labelString: '咖啡生豆瑕疵率',
+												fontSize: 40
 											},
 										}],
 										xAxes:[{
@@ -158,7 +174,7 @@
 												unit: dis_unit,
 												unitStepSize: 1,
 												displayFormats:{
-													'day': 'MM/DD/YYY',								      
+													'day': 'MM/DD/YYYY',								      
 													'minute': 'HH:mm', 
 								      				'hour': 'A HH:mm', 
 
@@ -166,14 +182,23 @@
 													max: '23:59'
 
 												}
-											}
-										}]
-									}
+											},
+											scaleLabel: {
+												display: true,
+												labelString: '挑豆日期',
+												fontSize: 40
+											},
+
+										}],
+										
+									},
+									
 								}
 
 						});
-						chart.options.scales.yAxes[0].ticks.fontSize = 20;
-						chart.options.scales.xAxes[0].ticks.fontSize = 20;
+						chart.options.scales.yAxes[0].ticks.fontSize = 30;
+						chart.options.scales.xAxes[0].ticks.fontSize = 30;
+						chart.options.legend.labels.fontSize = 40;
 						Chart.defaults.global.hover.intersect = false;
 
 						chart.update();
