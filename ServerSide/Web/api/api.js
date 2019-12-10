@@ -10,7 +10,7 @@ const { pool } = require("../db/index");
 var api = express.Router();
 
 api.get('/takePic', function(req,res,next){
-	req.pipe(request.get('http://140.137.132.172:2004/cur_shot', { json: true, body: req.body }), { end: false }).pipe(res);
+	req.pipe(request.get('http://140.137.132.59:2004/cur_shot', { json: true, body: req.body }), { end: false }).pipe(res);
 });
 
 api.get('/detectBean', function(req,res,next){
@@ -18,7 +18,7 @@ api.get('/detectBean', function(req,res,next){
 });
 
 api.post('/pick_bean', function(req,res,next){
-	req.pipe(request.get('http://140.137.132.172:2004/pick_bean', { json: true, body: req.body }), { end: false }).pipe(res);
+	req.pipe(request.get('http://140.137.132.59:2004/pick_bean', { json: true, body: req.body }), { end: false }).pipe(res);
 });
 
 api.post('/StoreRecord', function(req,res,next){

@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0,'/home/leeyihan/b03/darknet')
+sys.path.insert(0,'/home/Bo3admin/b03/b03_ServerSide/darknet')
 from darknet import *
 from time import gmtime, strftime, localtime, sleep
 import numpy as np
@@ -55,7 +55,7 @@ def yolo(image_path):
             cv2.rectangle(frame, (x-w//2,y+h//2), (x+w//2,y-h//2), (0,0,255),3)
             cv2.circle(frame, (x,y), 3, (255,255,0), 3)
     #存圖    
-    cv2.imwrite('/home/leeyihan/b03/socket_python/imageLog/result/result_'+image_path.split('/')[-1], frame)
+    cv2.imwrite('/home/Bo3admin/b03/b03_ServerSide/ServerSide/imageLog/result/result_'+image_path.split('/')[-1], frame)
 
     retval, buffer = cv2.imencode('.jpg', frame)
     pic_str = base64.b64encode(buffer)
@@ -115,8 +115,8 @@ def save_img(base64data, img_name):
         output.write(base64.b64decode(base64data))
 
 #讀取網路資訊
-net = load_net(b'/home/leeyihan/b03/darknet/cfg/yolov3_b03_1.cfg', b'/home/leeyihan/b03/darknet/backup/1027_1/yolov3_b03_1.backup', 0)
-meta = load_meta(b"/home/leeyihan/b03/darknet/coffee.data")
+net = load_net(b'/home/Bo3admin/b03/b03_ServerSide/darknet/cfg/yolov3_b03_1.cfg', b'/home/Bo3admin/b03/b03_ServerSide/darknet/backup/1027_1/yolov3_b03_1.backup', 0)
+meta = load_meta(b"/home/Bo3admin/b03/b03_ServerSide/darknet/coffee.data")
 
 app = Flask(__name__)
 
@@ -124,14 +124,14 @@ app = Flask(__name__)
 def detectBean():
     
     #拍照
-    r = requests.get('http://140.137.132.172:2004/cur_shot')
+    r = requests.get('http://140.137.132.59:2004/cur_shot')
     data = r.json() # Check the JSON Response Content documentation below
     nowTime = strftime("%Y-%m-%d-%T", localtime())
-    img_name = '/home/leeyihan/b03/ServerSide/imageLog/image/' + nowTime + '.jpg'
+    img_name = '/home/Bo3admin/b03/b03_ServerSide/ServerSide/imageLog/image/' + nowTime + '.jpg'
     save_img(data['image'] , img_name)
     
     #進行yolo物件偵測
-    
+
     #detect_result = yolo('/home/leeyihan/b03/ServerSide/imageLog/image/2019-10-28-08:33:17.jpg')
     detect_result = yolo(img_name)
     return jsonify(
@@ -139,7 +139,3 @@ def detectBean():
         ImageName=nowTime+'.jpg',
         data=detect_result['defect_list']
     )
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', threaded=True)
-    #yolo('/home/leeyihan/b03/ServerSide/imageLog/image/2019-10-28-08:33:17.jpg')
