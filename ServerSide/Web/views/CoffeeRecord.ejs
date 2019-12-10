@@ -35,20 +35,30 @@
 	</div>
 	<% include footer %>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.js"></script>
+	
 
 	<script>
-		
+		function range(start, end) {
+  			return Array(end - start + 1).fill().map((_, idx) => start + idx)
+		}
+		var getDaysArray = function(start, end) {
+    		for(var arr=[],dt=start; dt<=end; dt.setDate(dt.getDate()+1)){
+        		arr.push(new Date(dt));
+    		}
+    		return arr;
+		};
+
 		$(document).ready(function(){
 			$('#chart').hide()
 			var first_Search = true;
 			var first_Chart = true;
 			$('#getRecord').click(function(){
-				labels = []
-				data = []
-				console.log($('#StartDate').val(),$('#EndDate').val())
+				var labels = []
+				var data = []
+				var dis_unit = 'hour'
 				var sd = new Date($('#StartDate').val())
 				var ed = new Date($('#EndDate').val())
-				console.log(sd,ed)
 				if(sd > ed){
 					alert('起始時間不得晚於結束時間')
 					return;
@@ -84,10 +94,34 @@
 					},
 					success: function(res){
 						var perviousDate = '';
-						res.forEach(element => {
-							data.push(element.Record_DefectRate)
-							labels.push(new Date(element.Record_Date))
-						});
+						var Start_End_Date = range(sd.getDate(),ed.getDate(),1)
+						if(Start_End_Date.length == 2){
+							res.forEach(element => {
+								data.push(element.Record_DefectRate)
+								labels.push(moment(element.Record_Date).local())
+							})
+						}else{
+							dis_unit = 'day'
+							var allBean_Days = []
+							labels = getDaysArray(sd,ed)
+							Start_End_Date.forEach(element => {
+								var temp = []
+								res.filter(x => new Date(x.Record_Date).getDate() == element).forEach(element =>{
+									temp = temp.concat(JSON.parse(element.Record_Data))
+									
+								})
+								allBean_Days.push(temp)
+
+							})
+							allBean_Days.forEach( element => {
+								if(element.length > 0){
+									data.push(element.filter(x => x.c != 0).length / element.length)
+								}else{
+									data.push(0)
+								}
+							})
+						}
+						
 
 						var chart = new Chart(document.getElementById("chart_canvas"), {
 								type: 'line',
@@ -97,17 +131,22 @@
 										label : 'defect rate',
 										data: data,
 										backgroundColor: "rgba(0,148,255,0.6)",
-										pointBackgroundColor: "rgba(255,0,0,0.6)"
+										pointBackgroundColor: "rgba(255,0,0,0.6)",
+										fontSize : 20
 									}]
 								},
 								options: {
+									hover: {
+    									intersect: false
+  									},
+
 									animation: {
 										duration: 2000
 									},
 									scales: {
 										yAxes: [{
 											gridLines: {
-												display: false
+												display: true
 											},
 										}],
 										xAxes:[{
@@ -116,10 +155,16 @@
 											time : {
 												parser : 'MM/DD/YYY HH:mm',
 												tooltipFormat: 'll HH:mm',
-												unit: 'day',
+												unit: dis_unit,
 												unitStepSize: 1,
 												displayFormats:{
-													'day': 'MM/DD/YYY'
+													'day': 'MM/DD/YYY',								      
+													'minute': 'HH:mm', 
+								      				'hour': 'A HH:mm', 
+
+													min: '00:00',
+													max: '23:59'
+
 												}
 											}
 										}]
@@ -129,6 +174,8 @@
 						});
 						chart.options.scales.yAxes[0].ticks.fontSize = 20;
 						chart.options.scales.xAxes[0].ticks.fontSize = 20;
+						Chart.defaults.global.hover.intersect = false;
+
 						chart.update();
 					}
 				})
