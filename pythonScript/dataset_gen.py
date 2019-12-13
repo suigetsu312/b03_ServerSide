@@ -11,12 +11,12 @@ AllSampleImg = []
 #建立儲存樣本種類的變數
 SampleClass = [ 'mixing']
 #以下為儲存樣本資料夾的變數
-imgRootPath = './coffee'
-labelRootPath = './dataset'
+imgRootPath = '/home/Bo3admin/b03/b03_ServerSide/coffee/'
+labelRootPath = '/home/Bo3admin/b03/b03_ServerSide/dataset/'
 
-dataPath = './darknet/data/b03'
-trainPath = './darknet/data/b03/train'
-valPath = './darknet/data/b03/val'
+dataPath = '/home/Bo3admin/b03/b03_ServerSide/darknet/data/b03/'
+trainPath = '/home/Bo3admin/b03/b03_ServerSide/darknet/data/b03/train/'
+valPath = '/home/Bo3admin/b03/b03_ServerSide/darknet/data/b03/val/'
 #取得某種樣本所有的影像檔案路徑
 def getSampleImageByClass(sampleClass:str):
     #使用glob取得jpg檔的路徑

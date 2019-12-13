@@ -1,0 +1,9 @@
+/home/Bo3admin/b03/b03_ServerSide/darknet/data/b03/train/2019-10-26-20_52_30.jpg
+/home/Bo3admin/b03/b03_ServerSide/darknet/data/b03/train/2019-10-26-19_36_22.jpg
+/home/Bo3admin/b03/b03_ServerSide/darknet/data/b03/train/2019-10-26-19_43_29.jpg
+/home/Bo3admin/b03/b03_ServerSide/darknet/data/b03/train/2019-10-26-21_10_07.jpg
+/home/Bo3admin/b03/b03_ServerSide/darknet/data/b03/train/2019-10-26-21_27_47.jpg
+/home/Bo3admin/b03/b03_ServerSide/darknet/data/b03/train/2019-10-26-21_02_43.jpg
+/home/Bo3admin/b03/b03_ServerSide/darknet/data/b03/train/2019-10-26-21_06_22.jpg
+/home/Bo3admin/b03/b03_ServerSide/darknet/data/b03/train/2019-10-26-19_51_41.jpg
+/home/Bo3admin/b03/b03_ServerSide/darknet/data/b03/train/2019-10-26-21_40_56.jpg

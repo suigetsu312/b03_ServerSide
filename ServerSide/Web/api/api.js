@@ -14,7 +14,7 @@ api.get('/takePic', function(req,res,next){
 });
 
 api.get('/detectBean', function(req,res,next){
-	req.pipe(request.get('http://127.0.0.1:5000/detectBean', { json: true, body: req.body }), { end: false }).pipe(res);
+	req.pipe(request.get('http://192.168.88.95:5000/detectBean', { json: true, body: req.body }), { end: false }).pipe(res);
 });
 
 api.post('/pick_bean', function(req,res,next){
@@ -37,11 +37,11 @@ api.post('/StoreRecord', function(req,res,next){
 		client.query('INSERT INTO "B03_Coffee"."Record"( "Record_DefectRate", "Record_ImagePath", "Record_Data", "Record_Date") VALUES ($1, $2, $3, to_timestamp($4));',[DefectRate,OriImagePath,beanRecord, nowTime/1000], (error, result) => {
 		  done()
 		  if (error) {
+			console.log('查詢失敗')
 			console.log(error.stack)
 			res.sendStatus(400)
 		  } else {
-			console.log('成功插入資料')
-			res.sendStatus(200)
+			res.send(200,result.rows);
 		  }
 		})
 	})
@@ -60,6 +60,7 @@ api.post('/GetRecord', function(req,res,next){
 		  if (error) {
 			console.log('查詢失敗')
 			console.log(error.stack)
+			res.sendStatus(400)
 		  } else {
 			res.send(200,result.rows);
 		  }
@@ -83,9 +84,11 @@ api.post('/StoreSample',function(req,res,next){
 		client.query('INSERT INTO "B03_Coffee"."Samples"("Sample_ImagePath", "Sample_Data", "Sample_Date") VALUES ($1, $2, to_timestamp($3))',[imagePath,Samples, now/1000], (error, result) => {
 		  done()
 		  if (error) {
+			console.log('查詢失敗')
 			console.log(error.stack)
+			res.sendStatus(400)
 		  } else {
-			console.log(result.rows)
+			res.send(200,result.rows);
 		  }
 		})
 	})	

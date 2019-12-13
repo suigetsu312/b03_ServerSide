@@ -7,9 +7,9 @@ import sys
 import os
 from Sample.SampleImage import SampleImage
 
-positiveSampleClass = ['normal']
-negativeSampleClass = ['broken','insect']
-sampleRootPath = '/home/leeyihan/b03/coffee'
+positiveSampleClass = ['mixing']
+#negativeSampleClass = ['broken','insect']
+sampleRootPath = '/home/Bo3admin/b03/b03_ServerSide/coffee'
 sampleinfo = []
 def getSampleImagesByClass(sampleClass:str):
     print(sampleRootPath+'/'+sampleClass+'/*.jpg')
@@ -85,7 +85,7 @@ def getBBox(c:str, obClass:int):
             recy = int(y)
             recw = int(w)
             rech = int(h)
-            #cv2.rectangle(dis, (recx,recy),(recx+recw,recy+rech),color=(255,255,0))
+            cv2.rectangle(dis, (recx,recy),(recx+recw,recy+rech),color=(255,255,0))
             #類別
             c = obClass
             #長寬及高度 bbox : image
@@ -109,10 +109,10 @@ def getBBox(c:str, obClass:int):
 
 if __name__ == "__main__":
     idx = 1
-    for i in negativeSampleClass:
+    '''for i in negativeSampleClass:
         getBBox(i,idx)
         idx+=1
-
+    '''
     getBBox(positiveSampleClass[0],0)
     
 

@@ -42,20 +42,19 @@
 				//已經檢測過豆子
 				var already = false;
 				var curbeans = [];
-				$('#pick').click(function(){
+				$('#pick').unbind('click').bind('click',function(){
 					if(!already){
 						alert('尚未對生豆進行瑕疵檢測')
 					}
 					var defectBean = curbeans.filter(x =>x.c != 0)
-					
-					$.ajax({
-						type:'post',
-						url:'./api/pick_bean',
-						data : {'defectBean' : defectBean},
-						success: function(res){
-							console.log('c')
-						}
-					})
+						$.ajax({
+							type:'post',
+							url:'./api/pick_bean',
+							data : {'defectBean' : defectBean},
+							success: function(res){
+								console.log('c')
+							}
+						})
 
 				})
 
@@ -83,7 +82,6 @@
 								console.log(defectRate);
 								$('#defect_rate').text('生豆瑕疵率：'+defectRate.toFixed(2).toString())
 								//store record
-								
 								$.ajax({
 									type: 'post',
 									url:'./api/StoreRecord',
@@ -95,13 +93,19 @@
 									},
 									success : function(data){
 										console.log('stored')
+										alert('辨識結束')
+
 									},
 									error : function(){
 										console.log(this.data)
 									}
 									
 								})
-							}
+
+							},
+						error: function(){
+							alert('先放豆子才能進行辨識')
+						}
 					});
 				})
 			});

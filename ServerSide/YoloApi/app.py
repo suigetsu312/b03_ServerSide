@@ -14,17 +14,17 @@ import os
 def yolo(image_path):
     #([b.x, b.y, b.h, b.w, dets[j].prob[i]], meta.names[i])
     print('started detect')
-    '''
+    
     #因應相機位置將照片旋轉180度再儲存
-    Rot_name = '/home/leeyihan/b03/ServerSide/imageLog/rotate/rotate_' + strftime("%Y-%m-%d-%T", localtime())+'.jpg'
+    Rot_name = '/home/Bo3admin/b03/b03_ServerSide/ServerSide/imageLog/rotate/rotate_' + strftime("%Y-%m-%d-%T", localtime())+'.jpg'
     pri_image = Image.open(image_path)
     pri_image.rotate(180).save(Rot_name)
-    '''
+    
     #yolo物件偵測
-    trad_bbox = detect(net, meta, str.encode(image_path))
+    trad_bbox = detect(net, meta, str.encode(Rot_name))
 
     #讀取旋轉後的相片
-    frame = cv2.imread(image_path)
+    frame = cv2.imread(Rot_name)
 
     #如果物件偵測結果沒有任何豆子就回傳None(null)
     if len(trad_bbox) == 0:
@@ -44,7 +44,7 @@ def yolo(image_path):
         if a[i][4] == -1:
             continue
         #加入瑕疵豆列表
-        defect_list.append({'x':a[i][0],'y':a[i][1],'h':a[i][2],'w':a[i][3],'c':a[i][5]})
+        defect_list.append({'x':a[i][0],'y':a[i][1] ,'c':a[i][5]})
         x = int(a[i][0])
         y = int(a[i][1])
         h = int(a[i][2])
@@ -60,8 +60,9 @@ def yolo(image_path):
     retval, buffer = cv2.imencode('.jpg', frame)
     pic_str = base64.b64encode(buffer)
     pic_str = pic_str.decode()
-
+    
     data = {'image': pic_str, 'defect_list': defect_list}
+    print(data['defect_list'])
     return data
 
 #計算iou
@@ -124,16 +125,23 @@ app = Flask(__name__)
 def detectBean():
     
     #拍照
-    r = requests.get('http://140.137.132.59:2004/cur_shot')
-    data = r.json() # Check the JSON Response Content documentation below
+    try:
+        image_req = requests.get('http://140.137.132.59:2004/cur_shot')
+    except requests.exceptions.ConnectionError:
+        print('aaaa')
+        return Response('error: image is empty.(cur_shot from pi).',status=404)
+
+        
+    data = image_req.json() # Check the JSON Response Content documentation below
     nowTime = strftime("%Y-%m-%d-%T", localtime())
     img_name = '/home/Bo3admin/b03/b03_ServerSide/ServerSide/imageLog/image/' + nowTime + '.jpg'
     save_img(data['image'] , img_name)
     
     #進行yolo物件偵測
-
-    #detect_result = yolo('/home/leeyihan/b03/ServerSide/imageLog/image/2019-10-28-08:33:17.jpg')
     detect_result = yolo(img_name)
+
+    if(len(detect_result['defect_list']) == 0):
+        return Response('0',status=404)
     return jsonify(
         ResultImage=detect_result['image'],
         ImageName=nowTime+'.jpg',

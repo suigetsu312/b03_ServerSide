@@ -101,7 +101,11 @@
 						url:'./api/StoreSample',
 						data: jsondata,
 						success: function(data){
+							console.log(data)
 							alert("上傳完成")
+						},
+						error: function(data){
+							console.log(data)
 						}
 					})
 
